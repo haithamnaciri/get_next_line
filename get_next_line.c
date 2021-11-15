@@ -5,88 +5,123 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hnaciri- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/13 18:23:22 by hnaciri-          #+#    #+#             */
-/*   Updated: 2021/11/14 11:50:13 by hnaciri-         ###   ########.fr       */
+/*   Created: 2021/11/15 13:40:00 by hnaciri-          #+#    #+#             */
+/*   Updated: 2021/11/15 13:40:02 by hnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strchr(const char *s, int c)
+char    *ft_strchr(const char *s, int c)
 {
-	char	*str;
+        char    *str;
 
-	if (!s)
-		return (0);
-	str = (char *) s;
-	while (*str)
-	{
-		if ((char)c == *str)
-			return (str);
-		str++;
-	}
-	if (*str == (char)c)
-		return (str);
-	return (0);
+        if (!s)
+            return (0);
+        str = (char *) s;
+        while (*str)
+        {
+                if ((char)c == *str)
+                        return (str);
+                str++;
+        }
+        if (*str == (char)c)
+                return (str);
+        return (0);
 }
 
-char	*new_stock(int fd, char *stock)
+char    *ft_new_stock(int fd, char *stock)
 {
-	char	string[BUFFER_SIZE + 1];
+    char    *string;
+    int     readed;
 
-	if (!stock)
-		stock = malloc (sizeof(char) * 1);
-	stock[ft_strlen(stock)] = '\0';
-	while (!ft_strchr(stock, '\n'))
-	{
-		if (!read (fd, string, BUFFER_SIZE))
-			return (0);
-		stock = ft_strjoin(stock, string);
-	}
-	return (stock);
+    string = malloc (sizeof(char) * (BUFFER_SIZE + 1));
+    readed = 1;
+    while (!ft_strchr(stock, '\n') && readed)
+    {
+        readed = read (fd, string, BUFFER_SIZE);
+        if (readed < 0)
+        {
+            free (string);
+            return (stock);
+        }
+        string[readed] = '\0';
+        stock = ft_strjoin(stock, string);
+    }
+    free (string);
+    return (stock);
 }
 
-char	*get_line(char	*stock)
+char    *ft_line(const char *stock)
 {
-	char	*line;
-	int		i;
+    int i;
+    char    *line;
 
-	i = 0;
-	if (stock == 0)
-		return (0);
-	while (stock[i] != '\0' && stock[i] != '\n')
-		i++;
-	if (stock[i] == '\0')
-		line = malloc (sizeof(char) * (i + 1));
-	else
-		line = malloc (sizeof(char) * (i + 2));
-	i = 0;
-	while (stock[i] != '\0' && stock[i] != '\n')
-	{
-		line[i] = stock[i];
-		i++;
-	}
-	if (stock[i] == '\n')
-	{
-		line[i] = stock[i];
-		i++;
-	}
-	line[i] = '\0';
-	return (line);
+    i = 0;
+    if (!stock)
+        return (0);
+    if (!stock[i])
+        return (0);
+    while (stock[i] && stock[i] != '\n')
+        i++;
+    if (!stock[i])
+    {
+        line = malloc (sizeof(char) * (i + 1));
+        i = -1;
+        while (stock[++i])
+            line[i] = stock[i];
+        line[i] = stock[i];
+    }
+    else
+    {
+        line = malloc (sizeof(char) * (i + 2));
+        i = -1;
+        while (stock[++i] != '\n')
+            line[i] = stock[i];
+        line[i] = stock[i];
+        line[++i] = '\0';
+    }
+    return (line);
 }
 
-char	*get_next_line(int fd)
+char    *ft_move(char *stock)
 {
-	static char	*stock = 0;
-	char		*line;
+    int i;
+    int j;
+    char    *stock_move;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (0);
-	if (!(ft_strchr(stock, '\n')))
-		stock = new_stock(fd, stock);
-	line = get_line(stock);
-	stock = ft_strchr(stock, '\n');
-	if (stock)
-		stock++;
-	return (line);
+    i = 0;
+    j = 0;
+    if (!stock)
+        return (0);
+    while (stock[i] != '\n' && stock[i])
+        i++;
+    if (!stock[i])
+    {
+        free (stock);
+        return (0);
+    }
+    i++;
+    stock_move = malloc (sizeof(char) * (ft_strlen(stock) - i + 2));
+    if (!stock_move)
+        return (0);
+    while (stock[i])
+        stock_move[j++] = stock[i++];
+    stock_move[j] = '\0';
+    free (stock);
+    return (stock_move);
+}
+
+char    *get_next_line(int fd)
+{
+    static char *stock = 0;
+    char        *line;
+
+    if (BUFFER_SIZE <= 0 || fd < 0)
+        return (0);
+    if (!ft_strchr(stock, '\n'))
+        stock = ft_new_stock(fd, stock);
+    line = ft_line(stock);
+    stock = ft_move(stock);
+    return (line);
 }

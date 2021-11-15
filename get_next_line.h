@@ -18,8 +18,8 @@
 # include<unistd.h>
 # include<fcntl.h>
 
-char	*ft_strjoin(char const *s1, char const *s2);
-size_t	ft_strlen(char *str);
+char	*ft_strjoin(char *s1, char *s2);
+int ft_strlen(const char *s);
 char	*get_next_line(int fd);
 
 #endif
