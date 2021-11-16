@@ -6,7 +6,7 @@
 /*   By: hnaciri- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/13 11:25:36 by hnaciri-          #+#    #+#             */
-/*   Updated: 2021/11/14 12:35:27 by hnaciri-         ###   ########.fr       */
+/*   Updated: 2021/11/16 12:41:39 by hnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include<fcntl.h>
 
 char	*ft_strjoin(char *s1, char *s2);
-int ft_strlen(const char *s);
+int		ft_strlen(const char *s);
 char	*get_next_line(int fd);
 
 #endif
